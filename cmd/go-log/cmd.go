@@ -7,6 +7,12 @@ import (
 	"os"
 )
 
+const INFO_PREFIX = "INFO: "
+const WARNING_PREFIX = "WARNING: "
+const ERROR_PREFIX = "ERROR: "
+
+const LOG_FILE = "log.log"
+
 type Logger struct {
 	Info   *log.Logger
 	Warnig *log.Logger
@@ -14,7 +20,6 @@ type Logger struct {
 }
 
 type Config struct {
-	FileName        string
 	InfoOperation   Operation
 	WarnigOperation Operation
 	ErrorOperation  Operation
@@ -27,28 +32,27 @@ type Operation struct {
 
 func GetDefaultInfo() Operation {
 	return Operation{
-		"INFO: ",
+		INFO_PREFIX,
 		log.Ldate | log.Ltime,
 	}
 }
 
 func GetDefaultWarning() Operation {
 	return Operation{
-		"WARNING: ",
+		WARNING_PREFIX,
 		log.Ldate | log.Ltime | log.Lshortfile,
 	}
 }
 
 func GetDefaultError() Operation {
 	return Operation{
-		"ERROR: ",
+		ERROR_PREFIX,
 		log.Ldate | log.Ltime | log.Lshortfile,
 	}
 }
 
 func GetDefaultConfig() Config {
 	return Config{
-		"log.log",
 		GetDefaultInfo(),
 		GetDefaultWarning(),
 		GetDefaultError(),
@@ -73,10 +77,10 @@ func DefaultConsole() (*Logger, error) {
 	return Init(GetConsoleWritter(), &defaultCfg)
 }
 
-func DefaultFile(fileName string) (*Logger, error) {
+func DefaultFile() (*Logger, error) {
 	defaultCfg := GetDefaultConfig()
 
-	outWritter, err := GetFileWritter(fileName)
+	outWritter, err := GetFileWritter(LOG_FILE)
 	if err != nil {
 		return nil, err
 	}
