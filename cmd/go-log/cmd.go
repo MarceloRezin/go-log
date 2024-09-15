@@ -11,7 +11,7 @@ const INFO_PREFIX = "INFO: "
 const WARNING_PREFIX = "WARNING: "
 const ERROR_PREFIX = "ERROR: "
 
-const LOG_FILE = "log.log"
+const DEFAULT_LOG_FILE = "log.log"
 
 type Logger struct {
 	Info   *log.Logger
@@ -20,6 +20,7 @@ type Logger struct {
 }
 
 type Config struct {
+	OutWritter      io.Writer
 	InfoOperation   Operation
 	WarnigOperation Operation
 	ErrorOperation  Operation
@@ -51,45 +52,49 @@ func GetDefaultError() Operation {
 	}
 }
 
-func GetDefaultConfig() Config {
-	return Config{
-		GetDefaultInfo(),
-		GetDefaultWarning(),
-		GetDefaultError(),
-	}
-}
-
-func Init(out io.Writer, config *Config) (*Logger, error) {
+func Init(config *Config) (*Logger, error) {
 	if config == nil {
 		return nil, errors.New("configuration is required")
 	}
 
 	return &Logger{
-		log.New(out, config.InfoOperation.Prefix, config.InfoOperation.Flag),
-		log.New(out, config.WarnigOperation.Prefix, config.WarnigOperation.Flag),
-		log.New(out, config.ErrorOperation.Prefix, config.ErrorOperation.Flag),
+		log.New(config.OutWritter, config.InfoOperation.Prefix, config.InfoOperation.Flag),
+		log.New(config.OutWritter, config.WarnigOperation.Prefix, config.WarnigOperation.Flag),
+		log.New(config.OutWritter, config.ErrorOperation.Prefix, config.ErrorOperation.Flag),
 	}, nil
 
 }
 
 func DefaultConsole() (*Logger, error) {
-	defaultCfg := GetDefaultConfig()
-	return Init(GetConsoleWritter(), &defaultCfg)
-}
-
-func DefaultFile() (*Logger, error) {
-	defaultCfg := GetDefaultConfig()
-
-	outWritter, err := GetFileWritter(LOG_FILE)
-	if err != nil {
-		return nil, err
+	defaultCfg := Config{
+		GetConsoleWritter(),
+		GetDefaultInfo(),
+		GetDefaultWarning(),
+		GetDefaultError(),
 	}
 
-	return Init(outWritter, &defaultCfg)
+	return Init(&defaultCfg)
 }
 
 func GetConsoleWritter() io.Writer {
 	return os.Stderr
+}
+
+func DefaultFile() (*Logger, error) {
+	outWritter, err := GetFileWritter(DEFAULT_LOG_FILE)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defaultCfg := Config{
+		outWritter,
+		GetDefaultInfo(),
+		GetDefaultWarning(),
+		GetDefaultError(),
+	}
+
+	return Init(&defaultCfg)
 }
 
 func GetFileWritter(fileName string) (io.Writer, error) {
