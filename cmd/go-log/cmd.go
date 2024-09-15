@@ -20,7 +20,7 @@ type Logger struct {
 }
 
 type Config struct {
-	OutWritter      io.Writer
+	OutWriter       io.Writer
 	InfoOperation   Operation
 	WarnigOperation Operation
 	ErrorOperation  Operation
@@ -58,16 +58,16 @@ func Init(config *Config) (*Logger, error) {
 	}
 
 	return &Logger{
-		log.New(config.OutWritter, config.InfoOperation.Prefix, config.InfoOperation.Flag),
-		log.New(config.OutWritter, config.WarnigOperation.Prefix, config.WarnigOperation.Flag),
-		log.New(config.OutWritter, config.ErrorOperation.Prefix, config.ErrorOperation.Flag),
+		log.New(config.OutWriter, config.InfoOperation.Prefix, config.InfoOperation.Flag),
+		log.New(config.OutWriter, config.WarnigOperation.Prefix, config.WarnigOperation.Flag),
+		log.New(config.OutWriter, config.ErrorOperation.Prefix, config.ErrorOperation.Flag),
 	}, nil
 
 }
 
 func DefaultConsole() (*Logger, error) {
 	defaultCfg := Config{
-		GetConsoleWritter(),
+		GetConsoleWriter(),
 		GetDefaultInfo(),
 		GetDefaultWarning(),
 		GetDefaultError(),
@@ -76,19 +76,19 @@ func DefaultConsole() (*Logger, error) {
 	return Init(&defaultCfg)
 }
 
-func GetConsoleWritter() io.Writer {
+func GetConsoleWriter() io.Writer {
 	return os.Stderr
 }
 
 func DefaultFile() (*Logger, error) {
-	outWritter, err := GetFileWritter(DEFAULT_LOG_FILE)
+	outWriter, err := GetFileWriter(DEFAULT_LOG_FILE)
 
 	if err != nil {
 		return nil, err
 	}
 
 	defaultCfg := Config{
-		outWritter,
+		outWriter,
 		GetDefaultInfo(),
 		GetDefaultWarning(),
 		GetDefaultError(),
@@ -97,6 +97,6 @@ func DefaultFile() (*Logger, error) {
 	return Init(&defaultCfg)
 }
 
-func GetFileWritter(fileName string) (io.Writer, error) {
+func GetFileWriter(fileName string) (io.Writer, error) {
 	return os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 }
