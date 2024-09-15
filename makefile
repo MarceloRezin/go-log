@@ -1,5 +1,5 @@
 PACKAGE=github.com/MarceloRezin/go-log
-VERSION=v0.1.0
+VERSION=v0.1.1
 
 test:
 	@ echo "Executing unit tests"
