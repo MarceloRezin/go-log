@@ -11,6 +11,9 @@ const EXPECTED_INFO_FLAG = log.Ldate | log.Ltime
 const EXPECTED_WARNING_PREFIX = "WARNING: "
 const EXPECTED_WARNING_FLAG = log.Ldate | log.Ltime | log.Lshortfile
 
+const EXPECTED_ERROR_PREFIX = "ERROR: "
+const EXPECTED_ERROR_FLAG = log.Ldate | log.Ltime | log.Lshortfile
+
 func TestGetDefaultInfo(t *testing.T) {
 	op := GetDefaultInfo()
 
@@ -39,6 +42,22 @@ func TestGetDefaultWarning(t *testing.T) {
 	flagActual := op.Flag
 	if flagActual != EXPECTED_WARNING_FLAG {
 		t.Log("flag should be", EXPECTED_WARNING_FLAG, "but got", flagActual)
+		t.Fail()
+	}
+}
+
+func TestGetDefaultError(t *testing.T) {
+	op := GetDefaultError()
+
+	prefixActual := op.Prefix
+	if prefixActual != EXPECTED_ERROR_PREFIX {
+		t.Log("prefix should be", EXPECTED_ERROR_PREFIX, "but got", prefixActual)
+		t.Fail()
+	}
+
+	flagActual := op.Flag
+	if flagActual != EXPECTED_ERROR_FLAG {
+		t.Log("flag should be", EXPECTED_ERROR_FLAG, "but got", flagActual)
 		t.Fail()
 	}
 }
